@@ -23,8 +23,16 @@ class NeuralNetwork:
 		self.layer_info = layer_info
 		self.L = len(layer_info) - 1
 
+		"""
+			we can have various types of initialization but what i found is that
+			weight should have a initialization from a certain standard normal distribution and
+			biases should be zeros for optimal convergence for ReLU
+
+			see: https://www.geeksforgeeks.org/machine-learning/weight-initialization-techniques-for-deep-neural-networks/
+		"""
+
 		self.W = [np.random.randn(layer_info[l], layer_info[l-1]) * np.sqrt(2/layer_info[l-1]) for l in range(1, len(layer_info))]
-		self.B = [np.ones((layer_info[l], )) for l in range(1, len(layer_info))]
+		self.B = [np.zeros((layer_info[l], )) for l in range(1, len(layer_info))]
 	
 	def forward(self, inputs):
 		A = [inputs]
@@ -53,7 +61,7 @@ class NeuralNetwork:
 
 				for l in reversed(range(self.L)):
 					self.B[l] -= lr * dz
-					dw = self.W[l]
+					dw = self.W[l].copy() # copy it rather than just copying refrence
 					self.W[l] -= lr * np.outer(dz, A[l])
 
 					if l > 0:
